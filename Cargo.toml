@@ -2,5 +2,16 @@
 name = "cachec"
 version = "0.1.0"
 edition = "2024"
+authors = ["Emmanuel Mera <emmanuel.mera77@gmail.com>"]
+description = "Ultra fast data structures for concurrency."
+license = "MIT"
+repository = "https://github.com/ManuMario0/cachec"
+readme = "README.md"
+keywords = ["spsc", "lock-free", "queue", "low-latency", "ring-buffer"]
+categories = [
+    "concurrency",
+    "data-structures",
+    "hardware-support",
+]
 
 [dependencies]
