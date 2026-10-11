@@ -1,4 +1,4 @@
-# Cache-Cache (pronounced cache-see)
+# Cachec
 
 This library aims to provide a collection of primitives for handling concurrency in ultra-low-latency environments.
 It provides building blocks designed to be as hardware-sympathetic as possible.
