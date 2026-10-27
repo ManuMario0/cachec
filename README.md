@@ -1,11 +1,10 @@
-# Cache-Cache (pronounced cache-see)
+# Cachec
 
 This library aims to provide a collection of primitives for handling concurrency in ultra-low-latency environments.
-It provides building blocks designed to be as hardware-sympathetic as possible.
 
 ## Primitives Provided
 
-- **SPSC**: A lock-free, fixed-capacity ring buffer / channel with one producer and one consumer.
+- **Channel**: A lock-free, fixed-capacity channel with a statically known maximum number of producers and consumers.
 
 ## License
 
