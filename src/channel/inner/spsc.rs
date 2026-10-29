@@ -20,6 +20,7 @@
 //! By leveraging cache line alignment and atomics, we can reduce the push-to-pop latency drastically for high-volume, low-latency
 //! workloads.
 
+use std::array;
 use std::cell::UnsafeCell;
 use std::hint::spin_loop;
 use std::sync::Arc;
@@ -211,7 +212,7 @@ impl From<usize> for Index {
 /// [`.split()`]: `Channel::split()`
 #[repr(align(128))]
 pub struct Channel<T, const N: usize> {
-    buffer: Vec<Slot<T>>,
+    buffer: Box<[Slot<T> ; N]>,
     head: Index,
     tail: Index,
 }
@@ -225,10 +226,9 @@ impl<T, const N: usize> Channel<T, N> {
                 "the channel size should be a power of two"
             );
         };
-        let mut buffer = Vec::with_capacity(N);
-        for _ in 0..N {
-            buffer.push(Slot::new())
-        }
+
+        let buffer = Box::new(array::from_fn(|_| Slot::new()));
+
         Channel {
             buffer,
             head: 0.into(),
