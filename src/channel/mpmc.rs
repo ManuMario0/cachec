@@ -233,13 +233,10 @@ impl<T, const N: usize, const P: usize> Consumer<T, N, P> {
         }
         let mut index = self.next_index;
         loop {
-            match self.consumer[index].try_read() {
-                Some(data) => {
-                    self.next_index = Self::mask(index + 1);
-                    return data;
-                }
-                None => {}
-            };
+            if let Some(data) = self.consumer[index].try_read() {
+                self.next_index = Self::mask(index + 1);
+                return data;
+            }
 
             index = Self::mask(index + 1);
             spin_loop();
@@ -262,13 +259,10 @@ impl<T, const N: usize, const P: usize> Consumer<T, N, P> {
     #[inline(always)]
     pub fn try_read(&mut self) -> Option<T> {
         for i in 0..P {
-            match self.consumer[Self::mask(self.next_index + i)].try_read() {
-                Some(data) => {
-                    self.next_index = Self::mask(self.next_index + i + 1);
-                    return Some(data);
-                }
-                None => {}
-            };
+            if let Some(data) = self.consumer[Self::mask(self.next_index + i)].try_read() {
+                self.next_index = Self::mask(self.next_index + i + 1);
+                return Some(data);
+            }
         }
         None
     }
@@ -338,15 +332,10 @@ impl<T, const N: usize, const P: usize, const C: usize> Channel<T, N, P, C> {
                 "the number of consumers must be a power of two"
             );
         }
-        let mut channels = [const { [const { MaybeUninit::uninit() }; P] }; C];
-        for c in 0..C {
-            for p in 0..P {
-                channels[c][p] = MaybeUninit::new(spsc::Channel::new());
-            }
-        }
-        Channel {
-            channels: unsafe { MaybeUninit::assume_init(channels.map(|c| c.into()).into()) },
-        }
+
+        let channels = std::array::from_fn(|_| std::array::from_fn(|_| spsc::Channel::new()));
+
+        Channel { channels }
     }
 
     /// Splits the channel into a [`Producer`] and a [`Consumer`].
@@ -399,6 +388,12 @@ impl<T, const N: usize, const P: usize, const C: usize> Channel<T, N, P, C> {
                 next_index: 0,
             },
         )
+    }
+}
+
+impl<T, const N: usize, const P: usize, const C: usize> Default for Channel<T, N, P, C> {
+    fn default() -> Self {
+        Self::new()
     }
 }
 

@@ -184,9 +184,9 @@ impl Index {
     }
 }
 
-impl Into<usize> for Index {
-    fn into(self) -> usize {
-        self.inner.into_inner()
+impl From<Index> for usize {
+    fn from(value: Index) -> Self {
+        value.inner.into_inner()
     }
 }
 
@@ -212,7 +212,7 @@ impl From<usize> for Index {
 /// [`.split()`]: `Channel::split()`
 #[repr(align(128))]
 pub struct Channel<T, const N: usize> {
-    buffer: Box<[Slot<T> ; N]>,
+    buffer: Box<[Slot<T>; N]>,
     head: Index,
     tail: Index,
 }
